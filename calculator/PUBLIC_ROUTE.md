@@ -44,14 +44,17 @@ The wrapper is the page students and search engines land on. Its canonical is `h
 1. Create the deploy branch with the approved core and `calculator/` (G1, G2).
 2. Set Pages to the deploy branch, root folder, custom domain `calculator.absolute-academy.com` (G3).
 3. Add the DNS CNAME (G4). Wait for DNS and certificate.
-4. Optional deploy-time file at the subdomain root (`robots.txt` belongs at the root, so it is added on the deploy branch, not under `calculator/`):
+4. **Required deploy-time `robots.txt` at the subdomain root** (added on the deploy branch, not under `calculator/`, because robots files only apply at the root):
 
    ```
    User-agent: *
-   Allow: /
+   Allow: /calculator/
+   Disallow: /
 
    Sitemap: https://calculator.absolute-academy.com/calculator/sitemap.xml
    ```
+
+   Why: the core's root page has no noindex and still carries the old title "Absolute CAS — VCE CAS & Graphing Companion". Served at the subdomain root, it could be crawled as a second, duplicate page. This file keeps crawlers on `/calculator/`. The core can't be changed on this branch, so this is the control that applies. Note that `Disallow` stops crawling, not indexing, so if the root URL is ever linked from elsewhere it could still appear as a bare URL. Don't link to it.
 
 5. Verify:
    - `https://calculator.absolute-academy.com/calculator/` returns 200, with the title, canonical, `robots: index, follow`, and the JSON-LD.
