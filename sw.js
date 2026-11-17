@@ -1,5 +1,5 @@
 const sw = self;
-const CACHE = 'absolute-cas-1.0.0-mwk7icbb';
+const CACHE = 'absolute-cas-1.0.0-mwk8uioe';
 const HEAVY = /\/(pyodide|py\/wheels|mathlive|_next\/static|icons)\//;
 sw.addEventListener('install', (event) => {
     event.waitUntil(caches
