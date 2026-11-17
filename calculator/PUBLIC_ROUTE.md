@@ -1,128 +1,83 @@
-# Public route: absolute-academy.com/calculator
+# Public route: calculator.absolute-academy.com
 
-Status checked 2026-11-17. Nothing in this document has been applied to the live site, DNS or the core calculator.
+Status checked 2026-11-17. **Not live.** Nothing has been published. No CNAME record, DNS record, GitHub Pages setting or Framer page has been changed.
 
-## What was verified
+## Route
 
-- **Live host:** absolute-academy.com is a Framer site (`server: Framer`, `framer-site-id` set). It belongs to the Framer project **"Absolute Academy"** (id `zrtVQjwe4zVXhqBAcRDr`, My Workspace). The apex resolves to `31.43.160.6` and `31.43.161.6`. `www` redirects to the apex.
-- **Route:** `/calculator` and `/ti-nspire` return 404, so `/calculator` is free. `/atarcalculator` is an existing tool page on the same site and is the closest precedent.
-- **Maths learning pages** (from the Framer sitemap): `/general`, `/methods`, `/specialist`, `/710maths`.
-- **Core calculator in this repo:** the sibling "Framer calculator tab" build is unfinished and unpublished. It is served from the repo root and is not changed by this work.
-
-## Live publication blockers (current)
-
-The public route cannot go live in this turn. These blockers are listed in the order they must clear.
-
-1. **Framer publish is blocked.** The "Absolute Academy" project's publish check fails because of an invalid form webhook and unrelated pending edits. Publishing would also ship those edits, so nothing was published or changed. The form webhook and the pending edits are left as they are. The `/calculator` page can be created in the editor, but it should be published only after the publish check passes.
-2. **The updated core is not ready.** The calculator-core chat's changes are not final. The build in this repo is its unfinished build and must not be served publicly.
-3. **The old public build is erroring.** I could not reach it from this sandbox (github.io is blocked by the proxy), so its URL is unconfirmed. The public route does not reference it. Its embed points only at `APP_URL` below.
-4. **No verified app host yet.** Framer serves pages only, so the app (wrapper plus core) must be hosted elsewhere and embedded. Options: a dedicated subdomain (needs a DNS record, not verified here), or another static host with a verified URL. No existing path on absolute-academy.com can serve the app without a reverse proxy, and I could not verify that Framer provides one for this project.
-5. **Engine not tested end to end.** `cdn.jsdelivr.net` is blocked in this sandbox, so the calculation engine has not been exercised in a browser here.
-6. **Pricing wording unconfirmed.** Copy avoids "free" until pricing is confirmed.
-
-### Single switch for the public route
-
-The Framer embed points at one URL, `APP_URL`:
-
-```
-APP_URL = https://<APP_HOST>/calculator/
-```
-
-- `<APP_HOST>` is unset until an approved host is verified. The embed is not published with a placeholder.
-- The wrapper loads the core from its host root (`../`). So when the calculator-core chat's changes are ready, redeploying that host's root updates the public route. No Framer change is needed.
-- To roll back to nothing, remove the embed from the Framer page. Do not point `APP_URL` at any other build.
-
-## Route architecture
-
-| Piece | Where | Indexed? |
+| Route | Role | Status |
 |---|---|---|
-| Student entry page (copy, heading, embed, WebApplication data) | Framer page `/calculator` on absolute-academy.com | Yes. This is the indexable page. |
-| Calculator app (help, tour, keypad toggle, clear session) | `calculator/` wrapper over the core, on a static host | No. `noindex`, canonical points to `/calculator`. |
-| Calculator core | Static host root (unchanged) | Not part of this change |
+| `https://calculator.absolute-academy.com/calculator/` | **First public entry.** The student page, indexable. | Ready in this branch, not deployed |
+| `https://calculator.absolute-academy.com/` | The calculator core, served at the subdomain root. The wrapper frames it via `../`, so it stays same-origin. | Core still being finished on another branch |
+| `https://absolute-academy.com/calculator` | Optional Framer cross-link, **later**. | Blocked (see below) |
 
-The wrapper and core must be on the same origin, because Clear session and the keypad override work inside the core's same-origin document. Recommended static host: a dedicated subdomain such as `calculator.absolute-academy.com`, which is same-site with the apex.
+The wrapper is the page students and search engines land on. Its canonical is `https://calculator.absolute-academy.com/calculator/` and robots allows indexing. The iframe, the keypad toggle, the help guide and Clear session all work against the core on the same host.
 
-## Gates before anything is published
+## Blockers to going live
 
-1. **Sibling sign-off.** The core build in this repo is the sibling's unpublished work. Do not serve it publicly until that chat confirms it is final.
-2. **Engine boot.** The core loads Pyodide from `cdn.jsdelivr.net`. That host is blocked by this sandbox's proxy (403), so the calculation engine has **not** been tested end to end here. Test on staging in a normal browser: solve, a fraction template, a saved document, Clear session.
-3. **Pages source.** Enable GitHub Pages only from an approved folder or branch that contains the approved build. The feature branch must not be published. Check the repository's Pages settings first: if Pages already serves `main`, the current core may already be reachable at its github.io URL. This sandbox cannot reach github.io, so I could not confirm that.
-4. **DNS (not applied).** Adding the subdomain needs DNS access. The record would be `calculator` **CNAME** `aafiles.github.io`. Confirm the exact target in the repo's Pages settings before adding it. Do not change the apex records (`31.43.160.6`, `31.43.161.6`), which point at Framer.
-5. **Pricing wording.** "Free" is not used anywhere, because pricing is not confirmed in this work. Add an `offers` block to the JSON-LD only after pricing is confirmed.
-6. **Tracking.** The Framer site has a `/google-ads-privacy` page, so site-level tags may load on `/calculator`. The wrapper itself has no analytics. Do not claim "no analytics" on the public page unless site-level tags are excluded.
+1. **Unfinished core.** The calculator-core chat's changes are not final, and this branch's core is its unfinished build. It must not be served publicly.
+2. **Core changes are on another branch.** They must be integrated into the deploy branch before the host is considered ready. Name of that branch: `<core-branch>` (to be provided). See gate G1.
+3. **Pages configuration unverified.** Pages must be checked before anything changes. If Pages already serves a branch, the current core may be reachable at its github.io URL. This sandbox cannot reach github.io, so I could not check. The old public build is erroring and must not be linked to.
+4. **DNS record not added.** The record is `calculator` CNAME → the Pages host. Confirm the exact target in the repository's Pages settings before adding it. The apex records (`31.43.160.6`, `31.43.161.6`, Framer) must not change.
+5. **Engine not tested end to end.** `cdn.jsdelivr.net` is blocked in this sandbox, so calculations have not been run in a browser here.
+6. **Framer is blocked.** The "Absolute Academy" project's publish check fails because of an invalid form webhook and unrelated pending edits. Those are not touched. The Framer work is optional and comes last.
 
-## Framer change (exact, not applied)
+## Gates: the host is ready only when all of these pass
 
-Project: **Absolute Academy** (`zrtVQjwe4zVXhqBAcRDr`).
+**G1. Core integrated into the deploy branch.**
+- The sibling's approved core commit(s) from `<core-branch>` are merged or cherry-picked onto the deploy branch. The deploy branch must not be this feature branch as it stands, because it contains the unfinished core.
+- Verify that the deployed `index.html`, `next/`, `py/`, `mathlive/`, `cas.worker.js` and `manifest.webmanifest` match the approved commit, and that `calculator/` is present.
 
-1. **Add page** with path `calculator` (URL `/calculator`). Do not add it to the main navigation.
-2. **Page SEO:**
-   - Title: `TI-Nspire Online Calculator: CAS, No Sign-In | Absolute CAS`
-   - Description: `Online CAS calculator for VCE maths. Calculate in your browser with no sign-in, account or contact details. Independent, not affiliated with Texas Instruments.`
-3. **Page copy:**
+**G2. Deploy branch chosen (decision needed).** Recommendation: a dedicated branch such as `deploy/calculator` containing only the approved core and `calculator/`. Pages then serves that branch, root folder. Do not publish the feature branch.
 
-   > **H1:** Online CAS calculator for VCE maths
-   >
-   > Looking for a TI-Nspire online calculator? Absolute CAS is an independent online CAS calculator for VCE General, Methods and Specialist Mathematics. Start calculating straight away. There is no sign-in, no account and no contact details to give.
-   >
-   > Your calculations and notes stay in your browser. On a shared device, use Clear session when you finish.
-   >
-   > **H2:** How to use it
-   > - Type on your keyboard and press Enter to calculate.
-   > - Show the keypad when you need on-screen keys and the touchpad.
-   > - Open "Using the calculator" in the tool for shortcuts, fraction templates and the quick tour.
-   >
-   > **H2:** About this tool
-   > Absolute CAS is an independent educational tool made by Absolute Academy. It is not affiliated with, endorsed by or sponsored by Texas Instruments. TI-Nspire is a trademark of Texas Instruments.
-   >
-   > **H2:** Exams
-   > Internet devices aren't allowed in VCAA exams. Use this calculator for study and practice, and check your exam rules.
+**G3. Pages configuration verified.** Before any change, record the current Pages source, custom domain and HTTPS setting, and what it serves. Repository admin access is needed for this.
 
-4. **Embed** (Framer Embed component, HTML). Set `APP_URL` to the verified app host (see "Single switch" above). Do not publish while it is unset:
+**G4. DNS verified and added last.** Add `calculator` CNAME → the verified Pages target. Wait for the certificate, then enforce HTTPS.
 
-   ```html
-   <iframe src="APP_URL" title="Absolute CAS calculator" style="width:100%;height:80vh;min-height:640px;border:0;border-radius:12px" allow="clipboard-read; clipboard-write"></iframe>
+**G5. Engine works on the deployed host.** In a normal browser, run a calculation, a fraction template, a saved document and Clear session.
+
+**G6. Pricing wording confirmed.** Copy avoids "free" until pricing is confirmed. Add an `offers` block to the JSON-LD only after that.
+
+**G7. Tracking.** The wrapper and the subdomain have no analytics. If any is added, update the disclosure before publishing.
+
+## Activation steps (only after G1–G7)
+
+1. Create the deploy branch with the approved core and `calculator/` (G1, G2).
+2. Set Pages to the deploy branch, root folder, custom domain `calculator.absolute-academy.com` (G3).
+3. Add the DNS CNAME (G4). Wait for DNS and certificate.
+4. Optional deploy-time file at the subdomain root (`robots.txt` belongs at the root, so it is added on the deploy branch, not under `calculator/`):
+
+   ```
+   User-agent: *
+   Allow: /
+
+   Sitemap: https://calculator.absolute-academy.com/calculator/sitemap.xml
    ```
 
-5. **Page head custom code** (this page only):
+5. Verify:
+   - `https://calculator.absolute-academy.com/calculator/` returns 200, with the title, canonical, `robots: index, follow`, and the JSON-LD.
+   - `https://calculator.absolute-academy.com/` loads the core, with Pages serving the deploy branch.
+   - `https://calculator.absolute-academy.com/calculator/sitemap.xml` returns 200 and lists the entry page.
+6. Add the subdomain as a Search Console property, then submit `calculator/sitemap.xml`.
+7. Run G5 on the live host.
 
-   ```html
-   <script type="application/ld+json">
-   {
-     "@context": "https://schema.org",
-     "@type": "WebApplication",
-     "name": "Absolute CAS",
-     "url": "https://absolute-academy.com/calculator",
-     "description": "Online CAS calculator for VCE maths. Calculate in your browser with no sign-in, account or contact details.",
-     "applicationCategory": "EducationalApplication",
-     "operatingSystem": "Any modern web browser",
-     "browserRequirements": "Requires JavaScript",
-     "inLanguage": "en-AU",
-     "audience": { "@type": "EducationalAudience", "educationalRole": "student" },
-     "provider": { "@type": "Organization", "name": "Absolute Academy", "url": "https://absolute-academy.com/" }
-   }
-   </script>
-   ```
+## Later, optional: Framer cross-links (after Framer publishing is unblocked)
 
-6. **Internal links** (one text block on each page, placed in the existing resources or intro area; nothing else on these pages changes):
-   - `/general`, `/methods`, `/specialist`, `/710maths`
-   - Text: `Practise with the Absolute CAS online calculator. No sign-in needed.`
-   - Link: `/calculator`
-
-7. **Preview in Framer**, then publish only after every gate above passes.
-8. **After publish, verify:**
-   - `https://absolute-academy.com/calculator` returns 200 with the title and canonical above.
-   - `https://absolute-academy.com/sitemap.xml` lists `/calculator`. Framer generates this sitemap; confirm it includes the new page.
+- **Maths pages:** add a text link on `/general`, `/methods`, `/specialist` and `/710maths` pointing directly at `https://calculator.absolute-academy.com/calculator/`. No Framer calculator page is needed for this.
+- **Optional `/calculator` page on absolute-academy.com:** if created, make it a short link-out page, not a copy of the tool. Its canonical should point to the subdomain URL, so the two pages don't compete in search.
+- Keep the Framer form webhook and unrelated pending edits as they are. Do not publish the Framer project until its publish check passes.
 
 ## Rollback
 
-Unpublish or delete the Framer `/calculator` page and remove the four link blocks. Remove the `calculator` DNS record if one was added. The `calculator/` folder can be deleted without touching the core.
+- Remove the `calculator` CNAME, or disable Pages.
+- Revert or delete the deploy branch.
+- The feature branch is unaffected by either step.
 
 ## Files in this change
 
-- `calculator/index.html`: student wrapper with SEO metadata, help dialog, quick tour, keypad toggle and clear-session confirmation.
-- `calculator/calculator.css`: layout, focus styles and dialog styles. Dark palette matching the core.
-- `calculator/calculator.js`: wrapper behaviour. Hides the keypad column in the core's document until a student asks for it, and truncates the status text. Clear session releases the core's IndexedDB connection, then deletes only `keyval-store`.
+- `calculator/index.html`: indexable student entry page. Metadata, visible copy, WebApplication JSON-LD, help dialog, quick tour, keypad toggle and Clear session.
+- `calculator/calculator.css`: layout, focus styles, dialogs.
+- `calculator/calculator.js`: frame overrides (keypad hidden until requested, status truncation) and Clear session. It deletes only the core's `keyval-store` IndexedDB database.
+- `calculator/sitemap.xml`: sitemap for the entry page. Lives under `/calculator/`, so it can list only URLs under that path.
 - `calculator/PUBLIC_ROUTE.md`: this note.
 
 The core files (`index.html`, `next/`, `py/`, `mathlive/`, `cas.worker.js`, `manifest.webmanifest`) are not modified.

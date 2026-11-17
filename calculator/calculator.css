@@ -75,11 +75,16 @@ body {
   line-height: 1.25;
 }
 
-.brand-note {
+.brand-note,
+.brand-disclosure {
   margin: 2px 0 0;
   max-width: 70ch;
   color: var(--muted);
   font-size: 12px;
+}
+
+.brand-disclosure a {
+  color: var(--accent);
 }
 
 .actions {

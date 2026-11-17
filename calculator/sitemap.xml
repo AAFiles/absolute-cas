@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Submit this sitemap in Search Console once https://calculator.absolute-academy.com/ is live.
+  It lives under /calculator/, so it may only list URLs under that path.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://calculator.absolute-academy.com/calculator/</loc>
+    <lastmod>2026-11-17</lastmod>
+  </url>
+</urlset>

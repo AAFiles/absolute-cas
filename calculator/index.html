@@ -1,24 +1,44 @@
 <!doctype html>
 <!--
-  Absolute CAS student wrapper.
-  Served at /calculator/ on the calculator host. It frames the calculator core
-  (served from the site root, ../) in a same-origin iframe and adds the student
-  entry layer: help guide, quick tour, keypad toggle and clear-session control.
-  The core files (index.html, next/, py/, mathlive/, cas.worker.js) are not changed.
-  This wrapper is noindex on purpose: the indexable page is the public route
-  https://absolute-academy.com/calculator (see PUBLIC_ROUTE.md).
+  Absolute CAS student entry page.
+  Public URL: https://calculator.absolute-academy.com/calculator/ (indexable).
+  It frames the calculator core, served from the subdomain root (../), in a
+  same-origin iframe, and adds the student layer: help guide, quick tour,
+  keypad toggle and clear-session control. The core files (index.html, next/,
+  py/, mathlive/, cas.worker.js) are not changed here. See PUBLIC_ROUTE.md.
 -->
 <html lang="en-AU">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TI-Nspire Online Calculator: CAS, No Sign-In | Absolute CAS</title>
-  <meta name="description" content="Online CAS calculator for VCE maths. Calculate in your browser with no sign-in, account or contact details. Independent, not affiliated with Texas Instruments.">
-  <meta name="robots" content="noindex, follow">
-  <link rel="canonical" href="https://absolute-academy.com/calculator">
+  <title>TI-Nspire online calculator: CAS, no sign-in | Absolute CAS</title>
+  <meta name="description" content="Looking for a TI-Nspire online calculator? Absolute CAS is an independent CAS calculator for VCE maths. No sign-in. Not affiliated with Texas Instruments.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://calculator.absolute-academy.com/calculator/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Absolute Academy">
+  <meta property="og:title" content="TI-Nspire online calculator: CAS, no sign-in | Absolute CAS">
+  <meta property="og:description" content="Looking for a TI-Nspire online calculator? Absolute CAS is an independent CAS calculator for VCE maths. No sign-in. Not affiliated with Texas Instruments.">
+  <meta property="og:url" content="https://calculator.absolute-academy.com/calculator/">
+  <meta property="og:locale" content="en_AU">
   <meta name="theme-color" content="#09090b">
   <link rel="icon" href="../icons/icon-192.png">
   <link rel="stylesheet" href="calculator.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Absolute CAS",
+    "url": "https://calculator.absolute-academy.com/calculator/",
+    "description": "Looking for a TI-Nspire online calculator? Absolute CAS is an independent CAS calculator for VCE maths, used in the browser with no sign-in. Not affiliated with Texas Instruments.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any modern web browser",
+    "browserRequirements": "Requires JavaScript",
+    "inLanguage": "en-AU",
+    "audience": { "@type": "EducationalAudience", "educationalRole": "student" },
+    "provider": { "@type": "Organization", "name": "Absolute Academy", "url": "https://absolute-academy.com/" }
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#calc-frame">Skip to calculator</a>
@@ -27,7 +47,8 @@
     <div class="brand">
       <p class="brand-name">Absolute CAS</p>
       <h1 class="app-title">Online CAS calculator for VCE maths</h1>
-      <p class="brand-note">An independent educational tool by Absolute Academy. Not affiliated with Texas Instruments.</p>
+      <p class="brand-note">Looking for a TI-Nspire online calculator? Absolute CAS is an independent CAS calculator for VCE maths. No sign-in needed.</p>
+      <p class="brand-disclosure">Independent educational tool by <a href="https://absolute-academy.com/">Absolute Academy</a>. Not affiliated with, endorsed by or sponsored by Texas Instruments.</p>
     </div>
     <div class="actions" role="toolbar" aria-label="Calculator tools">
       <button type="button" class="btn btn-primary" id="help-open" aria-haspopup="dialog" aria-controls="help-dialog">Using the calculator</button>
