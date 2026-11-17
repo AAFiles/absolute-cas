@@ -1,0 +1,7 @@
+# Only the student entry page is for search engines.
+User-agent: *
+Allow: /calculator/
+Allow: /icons/
+Disallow: /
+
+Sitemap: https://calculator.absolute-academy.com/calculator/sitemap.xml
