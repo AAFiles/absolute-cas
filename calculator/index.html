@@ -1,0 +1,123 @@
+<!doctype html>
+<!--
+  Absolute CAS student wrapper.
+  Served at /calculator/ on the calculator host. It frames the calculator core
+  (served from the site root, ../) in a same-origin iframe and adds the student
+  entry layer: help guide, quick tour, keypad toggle and clear-session control.
+  The core files (index.html, next/, py/, mathlive/, cas.worker.js) are not changed.
+  This wrapper is noindex on purpose: the indexable page is the public route
+  https://absolute-academy.com/calculator (see PUBLIC_ROUTE.md).
+-->
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TI-Nspire Online Calculator: CAS, No Sign-In | Absolute CAS</title>
+  <meta name="description" content="Online CAS calculator for VCE maths. Calculate in your browser with no sign-in, account or contact details. Independent, not affiliated with Texas Instruments.">
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="https://absolute-academy.com/calculator">
+  <meta name="theme-color" content="#09090b">
+  <link rel="icon" href="../icons/icon-192.png">
+  <link rel="stylesheet" href="calculator.css">
+</head>
+<body>
+  <a class="skip-link" href="#calc-frame">Skip to calculator</a>
+
+  <header class="app-header">
+    <div class="brand">
+      <p class="brand-name">Absolute CAS</p>
+      <h1 class="app-title">Online CAS calculator for VCE maths</h1>
+      <p class="brand-note">An independent educational tool by Absolute Academy. Not affiliated with Texas Instruments.</p>
+    </div>
+    <div class="actions" role="toolbar" aria-label="Calculator tools">
+      <button type="button" class="btn btn-primary" id="help-open" aria-haspopup="dialog" aria-controls="help-dialog">Using the calculator</button>
+      <button type="button" class="btn" id="keypad-toggle" aria-expanded="false" aria-controls="calc-frame">Show keypad</button>
+      <button type="button" class="btn btn-quiet" id="clear-open" aria-haspopup="dialog" aria-controls="clear-dialog">Clear session</button>
+    </div>
+  </header>
+
+  <main class="calc-main">
+    <iframe id="calc-frame" class="calc-frame" src="../" title="Absolute CAS calculator" aria-busy="true" allow="clipboard-read; clipboard-write"></iframe>
+    <p class="frame-note" id="frame-note" hidden>The calculator didn’t load on this page. Refresh the page and try again.</p>
+    <noscript><p class="frame-note">The calculator needs JavaScript. Turn JavaScript on in your browser and reload this page.</p></noscript>
+  </main>
+
+  <p class="sr-only" id="status" role="status" aria-live="polite"></p>
+
+  <!-- Help guide: always reachable from "Using the calculator" -->
+  <dialog id="help-dialog" class="sheet" aria-labelledby="help-title">
+    <div class="sheet-body">
+      <h2 id="help-title">Using the calculator</h2>
+      <p>Absolute CAS is an independent calculator for VCE maths. It is not affiliated with Texas Instruments. Your work stays in this browser. Close this guide with Esc or Close, and reopen it any time from “Using the calculator”.</p>
+
+      <h3>Type with your keyboard</h3>
+      <p>Click inside the calculator, then type. Your physical keyboard works straight away. Press <kbd>Enter</kbd> to calculate.</p>
+
+      <h3>On-screen keys and touchpad</h3>
+      <p>Select <strong>Show keypad</strong> to display the keys. The arrow pad moves the cursor, and the ● in the middle is the touchpad click. Each small label above a key is a second function: tap <kbd>ctrl</kbd> or <kbd>shift</kbd> on screen, then the key.</p>
+
+      <h3>Shortcuts</h3>
+      <ul>
+        <li><kbd>Enter</kbd> calculates the current entry.</li>
+        <li><kbd>Ctrl</kbd> + <kbd>S</kbd> saves the document.</li>
+        <li><kbd>Ctrl</kbd> + <kbd>Z</kbd> undoes your last change.</li>
+        <li><kbd>Tab</kbd> moves to the next box inside a template.</li>
+      </ul>
+
+      <h3>Fractions and templates</h3>
+      <p>Press <kbd>▯/▯</kbd> to insert a fraction template. Type the top, press <kbd>Tab</kbd>, then type the bottom. On the keypad, tap <kbd>ctrl</kbd> then <kbd>÷</kbd> for the a/b fraction label.</p>
+
+      <h3>Clearing your work</h3>
+      <ul>
+        <li><kbd>Del</kbd> deletes the character before the cursor.</li>
+        <li><kbd>Ctrl</kbd> then <kbd>Del</kbd> clears the whole entry line.</li>
+        <li><kbd>doc</kbd>, then File, then New Document starts a fresh document.</li>
+        <li><strong>Clear session</strong> deletes every saved document and resets the calculator on this device.</li>
+      </ul>
+
+      <h3>Privacy</h3>
+      <p>Calculations run in your browser, and documents are saved only in this browser. We don’t ask for your name, email or contact details, and the calculator doesn’t send what you type anywhere. On a shared device, use Clear session when you finish.</p>
+
+      <h3>Exams</h3>
+      <p>Internet devices aren’t allowed in VCAA exams. Use this calculator for study and practice, and check your exam rules.</p>
+
+      <p class="fine">TI-Nspire is a trademark of Texas Instruments. Absolute CAS is not made by, endorsed by or sponsored by Texas Instruments.</p>
+
+      <div class="sheet-actions">
+        <button type="button" class="btn" data-action="tour">Take the quick tour</button>
+        <button type="button" class="btn btn-primary" data-action="close-help">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Optional short tour: four steps, skippable -->
+  <dialog id="tour-dialog" class="sheet" aria-labelledby="tour-title" aria-describedby="tour-text">
+    <div class="sheet-body">
+      <p class="tour-progress" id="tour-progress">Step 1 of 4</p>
+      <h2 id="tour-title" tabindex="-1">Type straight away</h2>
+      <p id="tour-text"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-quiet" data-action="tour-skip">Skip tour</button>
+        <button type="button" class="btn" id="tour-calc" data-action="tour-calc">Go to calculator</button>
+        <button type="button" class="btn" id="tour-back" data-action="tour-back" aria-disabled="true">Back</button>
+        <button type="button" class="btn btn-primary" id="tour-next" data-action="tour-next">Next</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Clear-session confirmation -->
+  <dialog id="clear-dialog" class="sheet" role="alertdialog" aria-labelledby="clear-title" aria-describedby="clear-text">
+    <div class="sheet-body">
+      <h2 id="clear-title">Clear this session?</h2>
+      <p id="clear-text">This deletes every document the calculator has saved in this browser, then resets it to a blank calculator. This can’t be undone.</p>
+      <p class="status-line" id="clear-msg" role="status"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn" id="clear-cancel" data-action="clear-cancel" autofocus>Cancel</button>
+        <button type="button" class="btn btn-danger" id="clear-confirm" data-action="clear-confirm">Clear session</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="calculator.js"></script>
+</body>
+</html>
