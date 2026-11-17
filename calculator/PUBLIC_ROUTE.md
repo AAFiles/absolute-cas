@@ -1,86 +1,81 @@
 # Public route: calculator.absolute-academy.com
 
-Status checked 2026-11-17. **Not live.** Nothing has been published. No CNAME record, DNS record, GitHub Pages setting or Framer page has been changed.
+Status: **not live.** Nothing is deployed. No Pages setting or DNS record has been changed.
 
 ## Route
 
-| Route | Role | Status |
-|---|---|---|
-| `https://calculator.absolute-academy.com/calculator/` | **First public entry.** The student page, indexable. | Ready in this branch, not deployed |
-| `https://calculator.absolute-academy.com/` | The calculator core, served at the subdomain root. The wrapper frames it via `../`, so it stays same-origin. | Core still being finished on another branch |
-| `https://absolute-academy.com/calculator` | Optional Framer cross-link, **later**. | Blocked (see below) |
+| Route | Role |
+|---|---|
+| `https://calculator.absolute-academy.com/calculator/` | First public entry. The student page, indexable. |
+| `https://calculator.absolute-academy.com/` | The calculator core, served at the subdomain root. The wrapper frames it via `../`, so it stays same-origin. |
+| `https://absolute-academy.com/calculator` | Later, optional Framer cross-link. |
 
-The wrapper is the page students and search engines land on. Its canonical is `https://calculator.absolute-academy.com/calculator/` and robots allows indexing. The iframe, the keypad toggle, the help guide and Clear session all work against the core on the same host.
+## Branches
 
-## Blockers to going live
+- **`claude/beautiful-cori-0dnbs3`** is the reviewable wrapper output. `calculator/` is developed here first.
+- **`deploy/calculator`** is the deployment branch. It is based on `main` (`de45f21`). It contains `calculator/` synced from the feature branch, plus a root `robots.txt`. Until the core handoff is integrated, its core files are the unfinished build inherited from `main`. Pages must not be pointed at this branch until P1 below is complete.
 
-1. **Unfinished core.** The calculator-core chat's changes are not final, and this branch's core is its unfinished build. It must not be served publicly.
-2. **Core changes are on another branch.** They must be integrated into the deploy branch before the host is considered ready. Name of that branch: `<core-branch>` (to be provided). See gate G1.
-3. **Pages configuration unverified.** Pages must be checked before anything changes. If Pages already serves a branch, the current core may be reachable at its github.io URL. This sandbox cannot reach github.io, so I could not check. The old public build is erroring and must not be linked to.
-4. **DNS record not added.** The record is `calculator` CNAME → the Pages host. Confirm the exact target in the repository's Pages settings before adding it. The apex records (`31.43.160.6`, `31.43.161.6`, Framer) must not change.
-5. **Engine not tested end to end.** `cdn.jsdelivr.net` is blocked in this sandbox, so calculations have not been run in a browser here.
-6. **Framer is blocked.** The "Absolute Academy" project's publish check fails because of an invalid form webhook and unrelated pending edits. Those are not touched. The Framer work is optional and comes last.
+## Prerequisites
 
-## Gates: the host is ready only when all of these pass
+Both must be complete before any Pages or DNS change.
 
-**G1. Core integrated into the deploy branch.**
-- The sibling's approved core commit(s) from `<core-branch>` are merged or cherry-picked onto the deploy branch. The deploy branch must not be this feature branch as it stands, because it contains the unfinished core.
-- Verify that the deployed `index.html`, `next/`, `py/`, `mathlive/`, `cas.worker.js` and `manifest.webmanifest` match the approved commit, and that `calculator/` is present.
+**P1. Core handoff integrated.** The calculator-core chat's approved commits are merged or cherry-picked into `deploy/calculator`. Then:
+- Confirm the core files (`index.html`, `next/`, `py/`, `mathlive/`, `cas.worker.js`, `manifest.webmanifest`) match the approved commit.
+- Confirm `calculator/` and `robots.txt` are present at the expected paths.
+- Run the browser checks against the root and `/calculator/` on the branch.
 
-**G2. Deploy branch chosen (decision needed).** Recommendation: a dedicated branch such as `deploy/calculator` containing only the approved core and `calculator/`. Pages then serves that branch, root folder. Do not publish the feature branch.
+**P2. Hosting settings verified.** Record the current GitHub Pages configuration before changing it: source branch and folder, custom domain, and HTTPS. Check whether Pages already serves an older build at the github.io URL. That build is erroring and must not be linked.
 
-**G3. Pages configuration verified.** Before any change, record the current Pages source, custom domain and HTTPS setting, and what it serves. Repository admin access is needed for this.
+## Deployment order (after P1 and P2)
 
-**G4. DNS verified and added last.** Add `calculator` CNAME → the verified Pages target. Wait for the certificate, then enforce HTTPS.
+1. Set Pages to source `deploy/calculator`, folder root. Set the custom domain to `calculator.absolute-academy.com`. This is the first step that exposes anything, which is why it comes after P1.
+2. Add the DNS record last: `calculator` CNAME to the Pages target confirmed in step 1. Do not change the apex records (`31.43.160.6`, `31.43.161.6`, Framer).
+3. Wait for DNS and the certificate, then enforce HTTPS.
+4. Verify the live host:
+   - `https://calculator.absolute-academy.com/calculator/` returns 200, with the title, canonical, `robots: index, follow` and the JSON-LD.
+   - `https://calculator.absolute-academy.com/` loads the core.
+   - `https://calculator.absolute-academy.com/robots.txt` returns the rules below.
+   - `https://calculator.absolute-academy.com/calculator/sitemap.xml` returns 200.
+5. In a normal browser on the live host, run a calculation, a fraction template, a saved document and Clear session.
+6. Add the subdomain as a Search Console property and submit `calculator/sitemap.xml`.
 
-**G5. Engine works on the deployed host.** In a normal browser, run a calculation, a fraction template, a saved document and Clear session.
+## robots.txt (on `deploy/calculator`, root)
 
-**G6. Pricing wording confirmed.** Copy avoids "free" until pricing is confirmed. Add an `offers` block to the JSON-LD only after that.
+```
+User-agent: *
+Allow: /calculator/
+Allow: /icons/
+Disallow: /
 
-**G7. Tracking.** The wrapper and the subdomain have no analytics. If any is added, update the disclosure before publishing.
+Sitemap: https://calculator.absolute-academy.com/calculator/sitemap.xml
+```
 
-## Activation steps (only after G1–G7)
+The core's root page has no noindex and still carries the old title, so it must not be crawled as a second page. This file keeps crawlers on `/calculator/`. `Disallow` stops crawling, not indexing, so the root should not be linked from anywhere.
 
-1. Create the deploy branch with the approved core and `calculator/` (G1, G2).
-2. Set Pages to the deploy branch, root folder, custom domain `calculator.absolute-academy.com` (G3).
-3. Add the DNS CNAME (G4). Wait for DNS and certificate.
-4. **Required deploy-time `robots.txt` at the subdomain root** (added on the deploy branch, not under `calculator/`, because robots files only apply at the root):
+## Copy and tracking
 
-   ```
-   User-agent: *
-   Allow: /calculator/
-   Disallow: /
+- The copy makes no pricing claims. If pricing is set later, add an `offers` block to the JSON-LD.
+- The subdomain has no analytics. If any is added, update the disclosure first.
 
-   Sitemap: https://calculator.absolute-academy.com/calculator/sitemap.xml
-   ```
+## Later: Framer cross-links
 
-   Why: the core's root page has no noindex and still carries the old title "Absolute CAS — VCE CAS & Graphing Companion". Served at the subdomain root, it could be crawled as a second, duplicate page. This file keeps crawlers on `/calculator/`. The core can't be changed on this branch, so this is the control that applies. Note that `Disallow` stops crawling, not indexing, so if the root URL is ever linked from elsewhere it could still appear as a bare URL. Don't link to it.
-
-5. Verify:
-   - `https://calculator.absolute-academy.com/calculator/` returns 200, with the title, canonical, `robots: index, follow`, and the JSON-LD.
-   - `https://calculator.absolute-academy.com/` loads the core, with Pages serving the deploy branch.
-   - `https://calculator.absolute-academy.com/calculator/sitemap.xml` returns 200 and lists the entry page.
-6. Add the subdomain as a Search Console property, then submit `calculator/sitemap.xml`.
-7. Run G5 on the live host.
-
-## Later, optional: Framer cross-links (after Framer publishing is unblocked)
-
-- **Maths pages:** add a text link on `/general`, `/methods`, `/specialist` and `/710maths` pointing directly at `https://calculator.absolute-academy.com/calculator/`. No Framer calculator page is needed for this.
-- **Optional `/calculator` page on absolute-academy.com:** if created, make it a short link-out page, not a copy of the tool. Its canonical should point to the subdomain URL, so the two pages don't compete in search.
-- Keep the Framer form webhook and unrelated pending edits as they are. Do not publish the Framer project until its publish check passes.
+- **Maths pages:** add a text link on `/general`, `/methods`, `/specialist` and `/710maths` pointing directly at `https://calculator.absolute-academy.com/calculator/`. No Framer page is needed.
+- **Optional `/calculator` page on absolute-academy.com:** a short link-out page, with its canonical set to the subdomain URL.
+- The Framer project's publish check is blocked by an invalid form webhook and unrelated pending edits. Those items are not touched. These cross-links wait until Framer publishing works.
 
 ## Rollback
 
-- Remove the `calculator` CNAME, or disable Pages.
-- Revert or delete the deploy branch.
-- The feature branch is unaffected by either step.
+- Set Pages to disable, or change its source back.
+- Remove the `calculator` CNAME record.
+- Revert `deploy/calculator`.
+- The feature branch is not affected.
 
-## Files in this change
+## Files
 
-- `calculator/index.html`: indexable student entry page. Metadata, visible copy, WebApplication JSON-LD, help dialog, quick tour, keypad toggle and Clear session.
-- `calculator/calculator.css`: layout, focus styles, dialogs.
+- `calculator/index.html`: the indexable entry page. Metadata, visible copy, WebApplication JSON-LD, help dialog, quick tour, keypad toggle and Clear session.
+- `calculator/calculator.css`: layout, focus styles and dialogs.
 - `calculator/calculator.js`: frame overrides (keypad hidden until requested, status truncation) and Clear session. It deletes only the core's `keyval-store` IndexedDB database.
-- `calculator/sitemap.xml`: sitemap for the entry page. Lives under `/calculator/`, so it can list only URLs under that path.
+- `calculator/sitemap.xml`: sitemap for the entry page. It lives under `/calculator/`, so it can only list URLs under that path.
 - `calculator/PUBLIC_ROUTE.md`: this note.
 
-The core files (`index.html`, `next/`, `py/`, `mathlive/`, `cas.worker.js`, `manifest.webmanifest`) are not modified.
+The core files are not modified on this branch.
